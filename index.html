@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Mafia - 6b6t</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1f1f 100%);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #c9a84c;
+            box-shadow: 0 4px 20px rgba(201, 168, 76, 0.3);
+        }
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #c9a84c;
+            text-shadow: 0 0 10px rgba(201, 168, 76, 0.5);
+            letter-spacing: 3px;
+        }
+        nav { display: flex; gap: 20px; align-items: center; }
+        nav a {
+            color: #e0e0e0;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        nav a:hover {
+            background: rgba(201, 168, 76, 0.2);
+            color: #c9a84c;
+        }
+        .discord-btn {
+            background: #5865F2;
+            color: white !important;
+            padding: 12px 24px !important;
+            border-radius: 8px !important;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s !important;
+        }
+        .discord-btn:hover {
+            background: #4752C4 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);
+        }
+        .discord-btn svg { width: 20px; height: 20px; fill: white; }
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #3d2020 100%);
+            border-radius: 15px;
+            margin-bottom: 40px;
+            border: 1px solid #c9a84c;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            color: #c9a84c;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(201, 168, 76, 0.5);
+            letter-spacing: 5px;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .section {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+        }
+        .section h2 {
+            color: #c9a84c;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #c9a84c;
+            padding-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        .content-editable {
+            min-height: 100px;
+            padding: 15px;
+            border: 2px dashed transparent;
+            border-radius: 8px;
+            transition: all 0.3s;
+            line-height: 1.8;
+        }
+        .content-editable:hover { border-color: #444; }
+        .content-editable:focus {
+            outline: none;
+            border-color: #c9a84c;
+            background: rgba(201, 168, 76, 0.05);
+        }
+        .content-editable[contenteditable="true"] {
+            border-color: #c9a84c;
+            cursor: text;
+        }
+        .admin-login {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            border: 2px solid #c9a84c;
+            border-radius: 10px;
+            padding: 15px;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .admin-login input {
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background: #0a0a0a;
+            color: #e0e0e0;
+        }
+        .admin-login button {
+            padding: 10px;
+            background: #c9a84c;
+            color: #0a0a0a;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .admin-login button:hover { background: #b8963e; }
+        .admin-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: #888;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            z-index: 999;
+        }
+        .admin-toggle:hover { background: #444; }
+        .save-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+        .save-btn.show { display: block; }
+        .save-btn:hover { background: #218838; }
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .member-card {
+            background: #0f0f0f;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #333;
+            transition: all 0.3s;
+        }
+        .member-card:hover {
+            border-color: #c9a84c;
+            transform: translateY(-5px);
+        }
+        .member-avatar {
+            width: 80px;
+            height: 80px;
+            background: #c9a84c;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #0a0a0a;
+            font-weight: bold;
+        }
+        .member-name {
+            font-weight: bold;
+            color: #c9a84c;
+            margin-bottom: 5px;
+        }
+        .member-role { color: #888; font-size: 0.9rem; }
+        .rules-list { list-style: none; padding: 0; }
+        .rules-list li {
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        .rules-list li:last-child { border-bottom: none; }
+        .rule-number {
+            background: #c9a84c;
+            color: #0a0a0a;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: #1a1a1a;
+            border-top: 2px solid #c9a84c;
+            margin-top: 40px;
+        }
+        footer p { color: #888; }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: none;
+            z-index: 2000;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+        .toast.show { display: block; }
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 20px; }
+            .hero h1 { font-size: 2rem; }
+            nav { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">THE MAFIA</div>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#members">Members</a>
+            <a href="#rules">Rules</a>
+            <a href="https://discord.gg/f948RbdBZ2" target="_blank" class="discord-btn">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286z"/>
+                </svg>
+                Our Discord
+            </a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" id="home">
+            <h1 id="hero-title">Welcome to The Mafia</h1>
+            <p id="hero-desc">We are a dominant force on 6b6t. Join us, conquer together, and leave our mark on the server.</p>
+        </section>
+
+        <section class="section" id="about">
+            <h2>About Us</h2>
+            <div class="content-editable" id="about-text" data-content-id="about">
+                <p>The Mafia was founded by a group of dedicated players who wanted to create a strong community on the 6b6t anarchy server. We focus on building, PvP, and having a great time together. Whether you're a veteran or just starting out, there's a place for you here.</p>
+            </div>
+        </section>
+
+        <section class="section" id="members">
+            <h2>Our Members</h2>
+            <div class="members-grid" id="members-grid">
+                <div class="member-card">
+                    <div class="member-avatar">Y</div>
+                    <div class="member-name content-editable" data-content-id="member1-name" contenteditable="false">YourName</div>
+                    <div class="member-role content-editable" data-content-id="member1-role" contenteditable="false">Leader</div>
+                </div>
+                <div class="member-card">
+                    <div class="member-avatar">M2</div>
+                    <div class="member-name content-editable" data-content-id="member2-name" contenteditable="false">Member2</div>
+                    <div class="member-role content-editable" data-content-id="member2-role" contenteditable="false">Co-Leader</div>
+                </div>
+                <div class="member-card">
+                    <div class="member-avatar">M3</div>
+                    <div class="member-name content-editable" data-content-id="member3-name" contenteditable="false">Member3</div>
+                    <div class="member-role content-editable" data-content-id="member3-role" contenteditable="false">Member</div>
+                </div>
+                <div class="member-card">
+                    <div class="member-avatar">M4</div>
+                    <div class="member-name content-editable" data-content-id="member4-name" contenteditable="false">Member4</div>
+                    <div class="member-role content-editable" data-content-id="member4-role" contenteditable="false">Member</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="rules">
+            <h2>Clan Rules</h2>
+            <div class="content-editable" id="rules-text" data-content-id="rules">
+                <ol class="rules-list">
+                    <li><span class="rule-number">1</span><span>Respect all clan members. Toxic behavior will not be tolerated.</span></li>
+                    <li><span class="rule-number">2</span><span>Follow the orders of leaders and co-leaders during operations.</span></li>
+                    <li><span class="rule-number">3</span><span>Do not betray the clan or leak internal information.</span></li>
+                    <li><span class="rule-number">4</span><span>Be active. Inactive members may be removed after 2 weeks.</span></li>
+                    <li><span class="rule-number">5</span><span>Have fun! This is a game, enjoy your time with us.</span></li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>The Mafia &copy; 2026. All rights reserved.</p>
+    </footer>
+
+    <div class="admin-login" id="admin-login">
+        <input type="password" id="admin-pass" placeholder="Admin password">
+        <button onclick="adminLogin()">Login</button>
+    </div>
+
+    <button class="admin-toggle" id="admin-toggle" onclick="toggleAdminPanel()">Admin</button>
+    <button class="save-btn" id="save-btn" onclick="saveAll()">Save Changes</button>
+    <div class="toast" id="toast">Changes saved!</div>
+
+    <script>
+        let isAdmin = false;
+        const Title = 'MafiaOnTop';
+        const STORAGE_KEY = 'the_mafia_content';
+
+        function toggleAdminPanel() {
+            const panel = document.getElementById('admin-login');
+            panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function adminLogin() {
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === Title || pass === localStorage.getItem('6b6t_admin_pass')) {
+                isAdmin = true;
+                document.getElementById('admin-login').style.display = 'none';
+                document.getElementById('admin-toggle').style.display = 'none';
+                document.getElementById('save-btn').classList.add('show');
+                enableEditing();
+                showToast('Logged in as admin!');
+            } else {
+                alert('Wrong password!');
+            }
+        }
+
+        function enableEditing() {
+            document.querySelectorAll('.content-editable').forEach(el => {
+                el.setAttribute('contenteditable', 'true');
+            });
+        }
+
+        function disableEditing() {
+            document.querySelectorAll('.content-editable').forEach(el => {
+                el.setAttribute('contenteditable', 'false');
+            });
+        }
+
+        function saveAll() {
+            const data = {};
+            document.querySelectorAll('[data-content-id]').forEach(el => {
+                data[el.dataset.contentId] = el.innerHTML;
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            showToast('Changes saved!');
+        }
+
+        function loadContent() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const data = JSON.parse(saved);
+                Object.keys(data).forEach(key => {
+                    const el = document.querySelector(`[data-content-id="${key}"]`);
+                    if (el) el.innerHTML = data[key];
+                });
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        document.addEventListener('DOMContentLoaded', loadContent);
+
+        document.getElementById('admin-pass').addEventListener('keypress', e => {
+            if (e.key === 'Enter') adminLogin();
+        });
+    </script>
+</body>
+</html>
