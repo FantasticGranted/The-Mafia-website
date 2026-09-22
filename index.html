@@ -208,10 +208,16 @@
             text-align: center;
             border: 1px solid #333;
             transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
         }
         .member-card:hover {
             border-color: #c9a84c;
             transform: translateY(-3px);
+        }
+        .member-card.expanded {
+            grid-column: span 2;
+            text-align: left;
         }
         .member-avatar {
             width: 50px;
@@ -229,7 +235,19 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .member-role { color: #888; font-size: 0.75rem; }
+        .member-roles, .member-role { color: #888; font-size: 0.75rem; }
+        .member-details {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #333;
+            color: #ccc;
+            font-size: 0.8rem;
+            text-align: left;
+        }
+        .member-card.expanded .member-details {
+            display: block;
+        }
         .roster-toggle {
             background: #c9a84c;
             color: #0a0a0a;
@@ -780,6 +798,25 @@
                 el.setAttribute('contenteditable', 'true');
             });
         }
+
+        function toggleMember(card) {
+            if (event.target.classList.contains('content-editable')) return;
+            card.classList.toggle('expanded');
+        }
+
+        document.querySelectorAll('.member-card').forEach(card => {
+            const roleEl = card.querySelector('.member-role');
+            const nameEl = card.querySelector('.member-name');
+            if (roleEl && !card.querySelector('.member-details')) {
+                const role = roleEl.textContent;
+                const name = nameEl ? nameEl.textContent : '';
+                card.setAttribute('data-roles', role);
+                const details = document.createElement('div');
+                details.className = 'member-details';
+                details.innerHTML = `<div>Role: ${role}</div>`;
+                card.appendChild(details);
+            }
+        });
 
         function disableEditing() {
             document.querySelectorAll('.content-editable').forEach(el => {
