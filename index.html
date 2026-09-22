@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Mafia - 6b6t</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1f1f 100%);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #c9a84c;
+            box-shadow: 0 4px 20px rgba(201, 168, 76, 0.3);
+        }
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #c9a84c;
+            text-shadow: 0 0 10px rgba(201, 168, 76, 0.5);
+            letter-spacing: 3px;
+        }
+        nav { display: flex; gap: 20px; align-items: center; }
+        nav a {
+            color: #e0e0e0;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        nav a:hover {
+            background: rgba(201, 168, 76, 0.2);
+            color: #c9a84c;
+        }
+        .discord-btn {
+            background: #5865F2;
+            color: white !important;
+            padding: 12px 24px !important;
+            border-radius: 8px !important;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s !important;
+        }
+        .discord-btn:hover {
+            background: #4752C4 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);
+        }
+        .discord-btn svg { width: 20px; height: 20px; fill: white; }
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #3d2020 100%);
+            border-radius: 15px;
+            margin-bottom: 40px;
+            border: 1px solid #c9a84c;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            color: #c9a84c;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(201, 168, 76, 0.5);
+            letter-spacing: 5px;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .section {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #333;
+        }
+        .section h2 {
+            color: #c9a84c;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #c9a84c;
+            padding-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        .content-editable {
+            min-height: 100px;
+            padding: 15px;
+            border: 2px dashed transparent;
+            border-radius: 8px;
+            transition: all 0.3s;
+            line-height: 1.8;
+        }
+        .content-editable:hover { border-color: #444; }
+        .content-editable:focus {
+            outline: none;
+            border-color: #c9a84c;
+            background: rgba(201, 168, 76, 0.05);
+        }
+        .content-editable[contenteditable="true"] {
+            border-color: #c9a84c;
+            cursor: text;
+        }
+        .admin-login {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            border: 2px solid #c9a84c;
+            border-radius: 10px;
+            padding: 15px;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .admin-login input {
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background: #0a0a0a;
+            color: #e0e0e0;
+        }
+        .admin-login button {
+            padding: 10px;
+            background: #c9a84c;
+            color: #0a0a0a;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .admin-login button:hover { background: #b8963e; }
+        .admin-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: #888;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            z-index: 999;
+        }
+        .admin-toggle:hover { background: #444; }
+        .save-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+        .save-btn.show { display: block; }
+        .save-btn:hover { background: #218838; }
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+        .members-grid.show {
+            max-height: 5000px;
+        }
+        .member-card {
+            background: #0f0f0f;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #333;
+            transition: all 0.3s;
+        }
+        .member-card:hover {
+            border-color: #c9a84c;
+            transform: translateY(-3px);
+        }
+        .member-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            object-fit: cover;
+        }
+        .member-name {
+            font-weight: bold;
+            color: #c9a84c;
+            margin-bottom: 3px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .member-role { color: #888; font-size: 0.75rem; }
+        .roster-toggle {
+            background: #c9a84c;
+            color: #0a0a0a;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        .roster-toggle:hover {
+            background: #b8963e;
+            transform: translateY(-2px);
+        }
+        .rules-list { list-style: none; padding: 0; }
+        .rules-list li {
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        .rules-list li:last-child { border-bottom: none; }
+        .rule-number {
+            background: #c9a84c;
+            color: #0a0a0a;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: #1a1a1a;
+            border-top: 2px solid #c9a84c;
+            margin-top: 40px;
+        }
+        footer p { color: #888; }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: none;
+            z-index: 2000;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+        .toast.show { display: block; }
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 20px; }
+            .hero h1 { font-size: 2rem; }
+            nav { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">THE MAFIA</div>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#members">Members</a>
+            <a href="#rules">Rules</a>
+            <a href="https://discord.gg/f948RbdBZ2" target="_blank" class="discord-btn">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286z"/>
+                </svg>
+                Our Discord
+            </a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" id="home">
+            <h1 id="hero-title">Welcome to The Mafia</h1>
+            <p id="hero-desc">We're a clan founded by 3 people and lead by 5. Join us, conquer together, and leave our mark on 6b6t.</p>
+        </section>
+
+        <section class="section" id="about">
+            <h2>About Us</h2>
+            <div class="content-editable" id="about-text" data-content-id="about">
+                <p>The Mafia was founded by a group of dedicated players who wanted to create a strong community on the 6b6t anarchy server. We focus on building, PvP, and having a great time together. Whether you're a veteran or just starting out, there's a place for you here.</p>
+            </div>
+        </section>
+
+        <section class="section" id="members">
+            <h2>Our Members</h2>
+            <button class="roster-toggle" onclick="document.getElementById('members-grid').classList.toggle('show')">
+                Show Roster
+            </button>
+                                    <div class="members-grid" id="members-grid">
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/523511807328124943/96d18e881f83625e42bff9cf8944c6f7.png?size=64" alt="ast1k3n">
+                    <div class="member-name content-editable" data-content-id="member-523511807328124943-name" contenteditable="false">ast1k3n</div>
+                    <div class="member-role content-editable" data-content-id="member-523511807328124943-role" contenteditable="false">Hitman</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1292638460469051454/76121d503156c167ae9253adbbc303ee.png?size=64" alt="867s">
+                    <div class="member-name content-editable" data-content-id="member-1292638460469051454-name" contenteditable="false">867s</div>
+                    <div class="member-role content-editable" data-content-id="member-1292638460469051454-role" contenteditable="false">Hitman</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/717494004211777547/a17913d69380f0ddba96a8f92573b792.png?size=64" alt="reetrydery">
+                    <div class="member-name content-editable" data-content-id="member-717494004211777547-name" contenteditable="false">reetrydery</div>
+                    <div class="member-role content-editable" data-content-id="member-717494004211777547-role" contenteditable="false">Architect</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/849501077816213504/1d28452a57693edf6ab8f4c0bed136de.png?size=64" alt="medievalgamer17">
+                    <div class="member-name content-editable" data-content-id="member-849501077816213504-name" contenteditable="false">medievalgamer17</div>
+                    <div class="member-role content-editable" data-content-id="member-849501077816213504-role" contenteditable="false">Architect</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/911516497346691072/78430985cd9f77cd85dccf9bdb380a7d.png?size=64" alt=".phoenixd">
+                    <div class="member-name content-editable" data-content-id="member-911516497346691072-name" contenteditable="false">.phoenixd</div>
+                    <div class="member-role content-editable" data-content-id="member-911516497346691072-role" contenteditable="false">Architect</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/978654541018968085/16dc4207180a63b6df5e420891cd8cfe.png?size=64" alt="daylightfullcyan">
+                    <div class="member-name content-editable" data-content-id="member-978654541018968085-name" contenteditable="false">daylightfullcyan</div>
+                    <div class="member-role content-editable" data-content-id="member-978654541018968085-role" contenteditable="false">Architect</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1106241243278741636/849b053338b7d1b379ad7c840036459b.png?size=64" alt="itzarrowslol">
+                    <div class="member-name content-editable" data-content-id="member-1106241243278741636-name" contenteditable="false">itzarrowslol</div>
+                    <div class="member-role content-editable" data-content-id="member-1106241243278741636-role" contenteditable="false">Architect</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1337061242103140494/a8ea76df9830dd1a22c5d2689d304d86.png?size=64" alt="gokuultrax">
+                    <div class="member-name content-editable" data-content-id="member-1337061242103140494-name" contenteditable="false">gokuultrax</div>
+                    <div class="member-role content-editable" data-content-id="member-1337061242103140494-role" contenteditable="false">Architect</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1349498346162880523/161af902c288d850c90130a38316b63d.png?size=64" alt="sf88s">
+                    <div class="member-name content-editable" data-content-id="member-1349498346162880523-name" contenteditable="false">sf88s</div>
+                    <div class="member-role content-editable" data-content-id="member-1349498346162880523-role" contenteditable="false">Architect</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1370770490427183225/8a1ab8943bac9f3749142230e0bf3d99.png?size=64" alt="chillguy6b">
+                    <div class="member-name content-editable" data-content-id="member-1370770490427183225-name" contenteditable="false">chillguy6b</div>
+                    <div class="member-role content-editable" data-content-id="member-1370770490427183225-role" contenteditable="false">Architect</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1377347699879186612/ff867d2d359374fed4a3e413e8387b4d.png?size=64" alt="uriauria1">
+                    <div class="member-name content-editable" data-content-id="member-1377347699879186612-name" contenteditable="false">uriauria1</div>
+                    <div class="member-role content-editable" data-content-id="member-1377347699879186612-role" contenteditable="false">Architect</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1399452451911893094/46bd56bb7de0c4e31c5319de887c4226.png?size=64" alt="redaqlff26">
+                    <div class="member-name content-editable" data-content-id="member-1399452451911893094-name" contenteditable="false">redaqlff26</div>
+                    <div class="member-role content-editable" data-content-id="member-1399452451911893094-role" contenteditable="false">Architect</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1426157993006862356/98ffc103f22ae8c26e41f88aca4ddc73.png?size=64" alt="mr_chicken557">
+                    <div class="member-name content-editable" data-content-id="member-1426157993006862356-name" contenteditable="false">mr_chicken557</div>
+                    <div class="member-role content-editable" data-content-id="member-1426157993006862356-role" contenteditable="false">Architect</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1448389149286727834/3f87cf102cae9cb76f5c0002cf8b0225.png?size=64" alt="melany_oppp">
+                    <div class="member-name content-editable" data-content-id="member-1448389149286727834-name" contenteditable="false">melany_oppp</div>
+                    <div class="member-role content-editable" data-content-id="member-1448389149286727834-role" contenteditable="false">Architect</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1474308491282878495/0932c718e3f0a7b3410e067d523679d2.png?size=64" alt="keutelboy">
+                    <div class="member-name content-editable" data-content-id="member-1474308491282878495-name" contenteditable="false">keutelboy</div>
+                    <div class="member-role content-editable" data-content-id="member-1474308491282878495-role" contenteditable="false">Architect</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1525559873977450636/994e39771bfeb6ceed6bc42da63c4b94.png?size=64" alt="budzoda">
+                    <div class="member-name content-editable" data-content-id="member-1525559873977450636-name" contenteditable="false">budzoda</div>
+                    <div class="member-role content-editable" data-content-id="member-1525559873977450636-role" contenteditable="false">Architect</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1342738342579671102/bdfc52315b09d0a0bc04ef44289b6257.png?size=64" alt="6jtg">
+                    <div class="member-name content-editable" data-content-id="member-1342738342579671102-name" contenteditable="false">6jtg</div>
+                    <div class="member-role content-editable" data-content-id="member-1342738342579671102-role" contenteditable="false">Cartel</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="nazaroidx1">
+                    <div class="member-name content-editable" data-content-id="member-1418279479545172149-name" contenteditable="false">nazaroidx1</div>
+                    <div class="member-role content-editable" data-content-id="member-1418279479545172149-role" contenteditable="false">Cartel</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/826741948227256350/36ff5444b60ccfaf4e5bd04dd0bac424.png?size=64" alt="ppman3307">
+                    <div class="member-name content-editable" data-content-id="member-826741948227256350-name" contenteditable="false">ppman3307</div>
+                    <div class="member-role content-editable" data-content-id="member-826741948227256350-role" contenteditable="false">Rank 1</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1169099196528332874/f93f9fe075cf58091a9e801807a1b066.png?size=64" alt="mrkushalrx12">
+                    <div class="member-name content-editable" data-content-id="member-1169099196528332874-name" contenteditable="false">mrkushalrx12</div>
+                    <div class="member-role content-editable" data-content-id="member-1169099196528332874-role" contenteditable="false">Rank 1</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1480934155146760364/e924af908d8cb9dd2becfeffd0501682.png?size=64" alt="toastty__">
+                    <div class="member-name content-editable" data-content-id="member-1480934155146760364-name" contenteditable="false">toastty__</div>
+                    <div class="member-role content-editable" data-content-id="member-1480934155146760364-role" contenteditable="false">Rank 1</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1295992924504588300/ef784a66930c07ea5ecb952a71b1a654.png?size=64" alt="c1awz_">
+                    <div class="member-name content-editable" data-content-id="member-1295992924504588300-name" contenteditable="false">c1awz_</div>
+                    <div class="member-role content-editable" data-content-id="member-1295992924504588300-role" contenteditable="false">Ally</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="biggiesmalls88_">
+                    <div class="member-name content-editable" data-content-id="member-1515901434963427397-name" contenteditable="false">biggiesmalls88_</div>
+                    <div class="member-role content-editable" data-content-id="member-1515901434963427397-role" contenteditable="false">Ally</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/268961292432179202/071cf3cb3205691021a4b4e5b165e91b.png?size=64" alt="xd3x1445">
+                    <div class="member-name content-editable" data-content-id="member-268961292432179202-name" contenteditable="false">xd3x1445</div>
+                    <div class="member-role content-editable" data-content-id="member-268961292432179202-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/294183510183510016/81bec7a97b01e74249b2f1f50557747a.png?size=64" alt="zvzvzvxzvzvxz">
+                    <div class="member-name content-editable" data-content-id="member-294183510183510016-name" contenteditable="false">zvzvzvxzvzvxz</div>
+                    <div class="member-role content-editable" data-content-id="member-294183510183510016-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/313214809480888320/9d64bcc1581067d21192878385481c3a.png?size=64" alt="mrman2b">
+                    <div class="member-name content-editable" data-content-id="member-313214809480888320-name" contenteditable="false">mrman2b</div>
+                    <div class="member-role content-editable" data-content-id="member-313214809480888320-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/405038537587818506/6fa39a74e6548241f5f8071f35e70f58.png?size=64" alt="patchy68">
+                    <div class="member-name content-editable" data-content-id="member-405038537587818506-name" contenteditable="false">patchy68</div>
+                    <div class="member-role content-editable" data-content-id="member-405038537587818506-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/527108773123325980/b2a23df118a53ca9bd144cce0a41881a.png?size=64" alt="y.ny">
+                    <div class="member-name content-editable" data-content-id="member-527108773123325980-name" contenteditable="false">y.ny</div>
+                    <div class="member-role content-editable" data-content-id="member-527108773123325980-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/530214714509099018/9630e310144b14ee93d15bb7c514c8c8.png?size=64" alt="figelo">
+                    <div class="member-name content-editable" data-content-id="member-530214714509099018-name" contenteditable="false">figelo</div>
+                    <div class="member-role content-editable" data-content-id="member-530214714509099018-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/561921281319108618/a_d3e8aeef202c2a6cdcfed31a4b94f8b8.png?size=64" alt="elemaster">
+                    <div class="member-name content-editable" data-content-id="member-561921281319108618-name" contenteditable="false">elemaster</div>
+                    <div class="member-role content-editable" data-content-id="member-561921281319108618-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/697933155562291241/0455e6b19b3fc3e6f94bf224c572bd7b.png?size=64" alt="mipeneesenorme">
+                    <div class="member-name content-editable" data-content-id="member-697933155562291241-name" contenteditable="false">mipeneesenorme</div>
+                    <div class="member-role content-editable" data-content-id="member-697933155562291241-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/735163333652643910/c3793a8bf92d0da15ebb54a6529efe96.png?size=64" alt="715m">
+                    <div class="member-name content-editable" data-content-id="member-735163333652643910-name" contenteditable="false">715m</div>
+                    <div class="member-role content-editable" data-content-id="member-735163333652643910-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/789815170192244736/ef3488463fbdb01b330904946f020918.png?size=64" alt="_majkey_">
+                    <div class="member-name content-editable" data-content-id="member-789815170192244736-name" contenteditable="false">_majkey_</div>
+                    <div class="member-role content-editable" data-content-id="member-789815170192244736-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="kingyt8624">
+                    <div class="member-name content-editable" data-content-id="member-865106407963230208-name" contenteditable="false">kingyt8624</div>
+                    <div class="member-role content-editable" data-content-id="member-865106407963230208-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/893371790485766204/a_6b557b6098d0f0046857941197ae0b96.png?size=64" alt="ezzzzzz_122">
+                    <div class="member-name content-editable" data-content-id="member-893371790485766204-name" contenteditable="false">ezzzzzz_122</div>
+                    <div class="member-role content-editable" data-content-id="member-893371790485766204-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/941928748909998120/016d5fa7fc93921049c62d557c873542.png?size=64" alt="asserturk1">
+                    <div class="member-name content-editable" data-content-id="member-941928748909998120-name" contenteditable="false">asserturk1</div>
+                    <div class="member-role content-editable" data-content-id="member-941928748909998120-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/966300865994559488/065e54a247a2a4e2d79a1ef6c717377c.png?size=64" alt="dragonmere_">
+                    <div class="member-name content-editable" data-content-id="member-966300865994559488-name" contenteditable="false">dragonmere_</div>
+                    <div class="member-role content-editable" data-content-id="member-966300865994559488-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/976474880079974441/c4e6a6d89d018a3493a779c8a1b3cfd1.png?size=64" alt="mapper461">
+                    <div class="member-name content-editable" data-content-id="member-976474880079974441-name" contenteditable="false">mapper461</div>
+                    <div class="member-role content-editable" data-content-id="member-976474880079974441-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/992039225048440854/72641dd3cbdfe67379d1e7476f7513be.png?size=64" alt="fapotaa">
+                    <div class="member-name content-editable" data-content-id="member-992039225048440854-name" contenteditable="false">fapotaa</div>
+                    <div class="member-role content-editable" data-content-id="member-992039225048440854-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1057603190377418762/9885291c6aad739d8d511a1f333a28bf.png?size=64" alt="mr.lotus1234">
+                    <div class="member-name content-editable" data-content-id="member-1057603190377418762-name" contenteditable="false">mr.lotus1234</div>
+                    <div class="member-role content-editable" data-content-id="member-1057603190377418762-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1059344279232843796/4191840c197e1c28c6b448cd3592b4a5.png?size=64" alt="pocolurseduard">
+                    <div class="member-name content-editable" data-content-id="member-1059344279232843796-name" contenteditable="false">pocolurseduard</div>
+                    <div class="member-role content-editable" data-content-id="member-1059344279232843796-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1066288089472970763/a_1d3fd6d7599d6ca4d960c85673c354d8.png?size=64" alt="delacruzy">
+                    <div class="member-name content-editable" data-content-id="member-1066288089472970763-name" contenteditable="false">delacruzy</div>
+                    <div class="member-role content-editable" data-content-id="member-1066288089472970763-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1069162538459205674/6b4b5d4194a6b01a508a2a602f83c8fb.png?size=64" alt="fragprosniper">
+                    <div class="member-name content-editable" data-content-id="member-1069162538459205674-name" contenteditable="false">fragprosniper</div>
+                    <div class="member-role content-editable" data-content-id="member-1069162538459205674-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1109987330699304990/9ec5810b481d113baa680dc5df35beda.png?size=64" alt="metaversai">
+                    <div class="member-name content-editable" data-content-id="member-1109987330699304990-name" contenteditable="false">metaversai</div>
+                    <div class="member-role content-editable" data-content-id="member-1109987330699304990-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1130824591716134913/069af3fead81a93b4f9953592d4c9f05.png?size=64" alt="prototypeotwo">
+                    <div class="member-name content-editable" data-content-id="member-1130824591716134913-name" contenteditable="false">prototypeotwo</div>
+                    <div class="member-role content-editable" data-content-id="member-1130824591716134913-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1216445479634735295/b1748ac07bf8f078a9a36a2dcea1aa65.png?size=64" alt="outfornow.">
+                    <div class="member-name content-editable" data-content-id="member-1216445479634735295-name" contenteditable="false">outfornow.</div>
+                    <div class="member-role content-editable" data-content-id="member-1216445479634735295-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1234539060400357429/fe901d1a7e261b165f4d4851ea542059.png?size=64" alt="ikeistuff">
+                    <div class="member-name content-editable" data-content-id="member-1234539060400357429-name" contenteditable="false">ikeistuff</div>
+                    <div class="member-role content-editable" data-content-id="member-1234539060400357429-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1239118142685319230/b2b0d675c9077e10e2d0dfe7f3ff0c1f.png?size=64" alt="mygqtk">
+                    <div class="member-name content-editable" data-content-id="member-1239118142685319230-name" contenteditable="false">mygqtk</div>
+                    <div class="member-role content-editable" data-content-id="member-1239118142685319230-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1267921864458633266/a_c31bd3ece017d36a8afa5f3c65cb7b2e.png?size=64" alt="pauo">
+                    <div class="member-name content-editable" data-content-id="member-1267921864458633266-name" contenteditable="false">pauo</div>
+                    <div class="member-role content-editable" data-content-id="member-1267921864458633266-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1276222054227775599/670f7a41176ad75a3255fc06da3ad766.png?size=64" alt="szilard0832_71700">
+                    <div class="member-name content-editable" data-content-id="member-1276222054227775599-name" contenteditable="false">szilard0832_71700</div>
+                    <div class="member-role content-editable" data-content-id="member-1276222054227775599-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1289972523001315460/1bfb4af6e026e080656b5498497eea4d.png?size=64" alt="i3us3r">
+                    <div class="member-name content-editable" data-content-id="member-1289972523001315460-name" contenteditable="false">i3us3r</div>
+                    <div class="member-role content-editable" data-content-id="member-1289972523001315460-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1322666598204444785/0f6b3cc48f3d98c0081d6ed3c4bab951.png?size=64" alt="zockerdudel">
+                    <div class="member-name content-editable" data-content-id="member-1322666598204444785-name" contenteditable="false">zockerdudel</div>
+                    <div class="member-role content-editable" data-content-id="member-1322666598204444785-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1348576249433423892/e656395884cc9dad130aa59c2d450427.png?size=64" alt="ac_play1_91238">
+                    <div class="member-name content-editable" data-content-id="member-1348576249433423892-name" contenteditable="false">ac_play1_91238</div>
+                    <div class="member-role content-editable" data-content-id="member-1348576249433423892-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1361643313362636952/3abeb69390e1d911c3cb4fabc5f1a398.png?size=64" alt="addicted.noxa">
+                    <div class="member-name content-editable" data-content-id="member-1361643313362636952-name" contenteditable="false">addicted.noxa</div>
+                    <div class="member-role content-editable" data-content-id="member-1361643313362636952-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1362221712011165787/07072dd4d9249823bc607c10499ddd7a.png?size=64" alt="ckyrrth">
+                    <div class="member-name content-editable" data-content-id="member-1362221712011165787-name" contenteditable="false">ckyrrth</div>
+                    <div class="member-role content-editable" data-content-id="member-1362221712011165787-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1373593671211024455/6a38d7d69b08dddfa9b0bc539403154d.png?size=64" alt="mrbbread_87933">
+                    <div class="member-name content-editable" data-content-id="member-1373593671211024455-name" contenteditable="false">mrbbread_87933</div>
+                    <div class="member-role content-editable" data-content-id="member-1373593671211024455-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1381566642005348362/a1b4a5c176466ca591ce0706e237c159.png?size=64" alt="mr.itoroltekafiokom">
+                    <div class="member-name content-editable" data-content-id="member-1381566642005348362-name" contenteditable="false">mr.itoroltekafiokom</div>
+                    <div class="member-role content-editable" data-content-id="member-1381566642005348362-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1388848551102251128/e8cc8bf72b02b2ef547614f4fbd1fa94.png?size=64" alt="ofc_blackcat">
+                    <div class="member-name content-editable" data-content-id="member-1388848551102251128-name" contenteditable="false">ofc_blackcat</div>
+                    <div class="member-role content-editable" data-content-id="member-1388848551102251128-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1392447975535677500/688abbc97437cf39c5fbb34c64a6da1d.png?size=64" alt="diegox0422">
+                    <div class="member-name content-editable" data-content-id="member-1392447975535677500-name" contenteditable="false">diegox0422</div>
+                    <div class="member-role content-editable" data-content-id="member-1392447975535677500-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1422319638158508175/33a441daceb8e853269b16055d30aff8.png?size=64" alt="burlivin1">
+                    <div class="member-name content-editable" data-content-id="member-1422319638158508175-name" contenteditable="false">burlivin1</div>
+                    <div class="member-role content-editable" data-content-id="member-1422319638158508175-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1435555281298788472/3cace9ddfe637a426456c47ebb37f94d.png?size=64" alt="wastedrey">
+                    <div class="member-name content-editable" data-content-id="member-1435555281298788472-name" contenteditable="false">wastedrey</div>
+                    <div class="member-role content-editable" data-content-id="member-1435555281298788472-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1435899498118250629/c5c239019a0b9f108871a8cb785bc9d0.png?size=64" alt="depressed_spaggeti">
+                    <div class="member-name content-editable" data-content-id="member-1435899498118250629-name" contenteditable="false">depressed_spaggeti</div>
+                    <div class="member-role content-editable" data-content-id="member-1435899498118250629-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1451564333938249831/b63f9a9ecc4289921d6ce1fea6d6d60b.png?size=64" alt="oldleader1234">
+                    <div class="member-name content-editable" data-content-id="member-1451564333938249831-name" contenteditable="false">oldleader1234</div>
+                    <div class="member-role content-editable" data-content-id="member-1451564333938249831-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1458472776414396686/ae9c6bf7720ce9f10b5cf43ad13740c8.png?size=64" alt="marcus0x1">
+                    <div class="member-name content-editable" data-content-id="member-1458472776414396686-name" contenteditable="false">marcus0x1</div>
+                    <div class="member-role content-editable" data-content-id="member-1458472776414396686-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1458808218842300689/509759680011d696d10b2b7fb1df4326.png?size=64" alt="soulking0425">
+                    <div class="member-name content-editable" data-content-id="member-1458808218842300689-name" contenteditable="false">soulking0425</div>
+                    <div class="member-role content-editable" data-content-id="member-1458808218842300689-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1459586864049815685/5f9312c16f522afa5b34a0f8b73e1902.png?size=64" alt="wasttry">
+                    <div class="member-name content-editable" data-content-id="member-1459586864049815685-name" contenteditable="false">wasttry</div>
+                    <div class="member-role content-editable" data-content-id="member-1459586864049815685-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1468292160469336175/d44a4d40b2c6ae52d9ad03d7bb407ef8.png?size=64" alt="guovo2">
+                    <div class="member-name content-editable" data-content-id="member-1468292160469336175-name" contenteditable="false">guovo2</div>
+                    <div class="member-role content-editable" data-content-id="member-1468292160469336175-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1472197635493593262/cf6adf6c65fe4080c12b1f004fe966b8.png?size=64" alt="bomboclat_ben">
+                    <div class="member-name content-editable" data-content-id="member-1472197635493593262-name" contenteditable="false">bomboclat_ben</div>
+                    <div class="member-role content-editable" data-content-id="member-1472197635493593262-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1474119584255836324/5e0e78b1432703e0d6d6cb9058cea67d.png?size=64" alt="legobricks0401_67872">
+                    <div class="member-name content-editable" data-content-id="member-1474119584255836324-name" contenteditable="false">legobricks0401_67872</div>
+                    <div class="member-role content-editable" data-content-id="member-1474119584255836324-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="grant_42089">
+                    <div class="member-name content-editable" data-content-id="member-1477403697305751654-name" contenteditable="false">grant_42089</div>
+                    <div class="member-role content-editable" data-content-id="member-1477403697305751654-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1492270968964386946/8e10e01dd929dc19f3efc62b96394b2f.png?size=64" alt="darkwarrior_22440">
+                    <div class="member-name content-editable" data-content-id="member-1492270968964386946-name" contenteditable="false">darkwarrior_22440</div>
+                    <div class="member-role content-editable" data-content-id="member-1492270968964386946-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1504584133672833074/4a952b37ce735e4a8f7123832c193b9b.png?size=64" alt="steven893874">
+                    <div class="member-name content-editable" data-content-id="member-1504584133672833074-name" contenteditable="false">steven893874</div>
+                    <div class="member-role content-editable" data-content-id="member-1504584133672833074-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1511785960889909300/a_149e2f9ce211f4a8f7e6c80e243c4c63.png?size=64" alt="8f7v">
+                    <div class="member-name content-editable" data-content-id="member-1511785960889909300-name" contenteditable="false">8f7v</div>
+                    <div class="member-role content-editable" data-content-id="member-1511785960889909300-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1518723550297722965/2e3e4c24eb10a9b61acf706e2f5c03e8.png?size=64" alt="sato_13494">
+                    <div class="member-name content-editable" data-content-id="member-1518723550297722965-name" contenteditable="false">sato_13494</div>
+                    <div class="member-role content-editable" data-content-id="member-1518723550297722965-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1520125356755914773/7238380bdef47684bb9cf2b782e9b138.png?size=64" alt="v1lling">
+                    <div class="member-name content-editable" data-content-id="member-1520125356755914773-name" contenteditable="false">v1lling</div>
+                    <div class="member-role content-editable" data-content-id="member-1520125356755914773-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1521780439759458338/13a15d7f39d34854189aaff97df5bd43.png?size=64" alt="somethingwearingyourfacewaits">
+                    <div class="member-name content-editable" data-content-id="member-1521780439759458338-name" contenteditable="false">somethingwearingyourfacewaits</div>
+                    <div class="member-role content-editable" data-content-id="member-1521780439759458338-role" contenteditable="false">Visitor</div>
+                </div>
+                <div class="member-card">
+                    <img class="member-avatar" src="https://cdn.discordapp.com/avatars/1523283971348369488/8e209c840cc0dd0af7877ebcbc84401f.png?size=64" alt="riceemc.">
+                    <div class="member-name content-editable" data-content-id="member-1523283971348369488-name" contenteditable="false">riceemc.</div>
+                    <div class="member-role content-editable" data-content-id="member-1523283971348369488-role" contenteditable="false">Visitor</div>
+                </div>
+            </div>
+
+
+        </section>
+
+        <section class="section" id="rules">
+            <h2>Clan Rules</h2>
+            <div class="content-editable" id="rules-text" data-content-id="rules">
+                <ol class="rules-list">
+                    <li><span class="rule-number">1</span><span>Respect all clan members. Toxic behavior will not be tolerated.</span></li>
+                    <li><span class="rule-number">2</span><span>Follow the orders of leaders and co-leaders during operations.</span></li>
+                    <li><span class="rule-number">3</span><span>Do not betray the clan or leak internal information.</span></li>
+                    <li><span class="rule-number">4</span><span>Be active. Inactive members may be removed after 2 weeks.</span></li>
+                    <li><span class="rule-number">5</span><span>Have fun! This is a game, enjoy your time with us.</span></li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>The Mafia &copy; 2026. All rights reserved.</p>
+    </footer>
+
+    <div class="admin-login" id="admin-login">
+        <input type="password" id="admin-pass" placeholder="Admin password">
+        <button onclick="adminLogin()">Login</button>
+    </div>
+
+    <button class="admin-toggle" id="admin-toggle" onclick="toggleAdminPanel()">Admin</button>
+    <button class="save-btn" id="save-btn" onclick="saveAll()">Save Changes</button>
+    <div class="toast" id="toast">Changes saved!</div>
+
+    <script>
+        let isAdmin = false;
+        const DEFAULT_PASSWORD = 'MafiaOnTop';
+        const STORAGE_KEY = 'the_mafia_content';
+
+        function toggleAdminPanel() {
+            const panel = document.getElementById('admin-login');
+            panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function adminLogin() {
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === DEFAULT_PASSWORD || pass === localStorage.getItem('6b6t_admin_pass')) {
+                isAdmin = true;
+                document.getElementById('admin-login').style.display = 'none';
+                document.getElementById('admin-toggle').style.display = 'none';
+                document.getElementById('save-btn').classList.add('show');
+                enableEditing();
+                showToast('Logged in as admin!');
+            } else {
+                alert('Wrong password!');
+            }
+        }
+
+        function enableEditing() {
+            document.querySelectorAll('.content-editable').forEach(el => {
+                el.setAttribute('contenteditable', 'true');
+            });
+        }
+
+        function disableEditing() {
+            document.querySelectorAll('.content-editable').forEach(el => {
+                el.setAttribute('contenteditable', 'false');
+            });
+        }
+
+        function saveAll() {
+            const data = {};
+            document.querySelectorAll('[data-content-id]').forEach(el => {
+                data[el.dataset.contentId] = el.innerHTML;
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            showToast('Changes saved!');
+        }
+
+        function loadContent() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const data = JSON.parse(saved);
+                Object.keys(data).forEach(key => {
+                    const el = document.querySelector(`[data-content-id="${key}"]`);
+                    if (el) el.innerHTML = data[key];
+                });
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        document.addEventListener('DOMContentLoaded', loadContent);
+
+        document.getElementById('admin-pass').addEventListener('keypress', e => {
+            if (e.key === 'Enter') adminLogin();
+        });
+    </script>
+</body>
+</html>
