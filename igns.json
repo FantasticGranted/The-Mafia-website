@@ -208,5 +208,10 @@
     "ign": "afoam",
     "source": "channel",
     "name": "sf88s"
+  },
+  "1342738342579671102": {
+    "ign": "afoam",
+    "source": "manual",
+    "name": "6jtg"
   }
 }
